@@ -1,6 +1,7 @@
 package com.social.demo.entity;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.social.demo.constants.UserStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,9 +16,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -46,13 +43,16 @@ public class UserEntity {
     private String avatarImage;
 
     @Column(unique = true)
-    private String phone;
+    private String phoneNumber;
+
+    @Column(nullable = false)
+    private boolean isPrivate;
 
     @Column(nullable = false, unique = true)
     public String email;
 
-    @Column(nullable = false)
-    public UserStatus status;
+    @Column(nullable = false, unique = true)
+    public String username;
 
     @JsonIgnore
     @Column(nullable = false)
@@ -60,7 +60,7 @@ public class UserEntity {
 
     @Column(nullable = false)
     @CreationTimestamp
-    private LocalDate createdDate;
+    private LocalDateTime createdDate;
 
     // @JsonIgnore
     // @Column
@@ -72,19 +72,17 @@ public class UserEntity {
     private List<UserFollowEntity> followers = new ArrayList<>();
     @OneToMany(mappedBy = "following", fetch = FetchType.LAZY)
     private List<UserFollowEntity> following = new ArrayList<>();
-    @ManyToMany
-    @JoinTable(name = "friends", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "friend_id"))
-    private List<UserEntity> friends = new ArrayList<>();
 
     public UserEntity() {
-
+        this.isPrivate = false;
     }
 
-    public UserEntity(String email, String firstName, String lastName, String password) {
+    public UserEntity(String email, String firstName, String lastName, String username, String password) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
-
+        this.username = username;
+        this.isPrivate = false;
         // this.salt = UUID.randomUUID().toString();
         this.password = new BCryptPasswordEncoder().encode(password);
         this.password = password;

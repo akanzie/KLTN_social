@@ -28,7 +28,7 @@ public class CommentEntity {
     private Long id;
     
     @Column(nullable = false)
-    private String content;
+    private String body;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)

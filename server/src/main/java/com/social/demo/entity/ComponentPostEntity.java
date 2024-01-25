@@ -1,11 +1,5 @@
 package com.social.demo.entity;
 
-import java.time.LocalDateTime;
-
-import org.hibernate.annotations.CreationTimestamp;
-
-import com.social.demo.constants.FriendStatus;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,26 +13,21 @@ import lombok.Data;
 
 @Entity
 @Data
-@Table(name = "friends")
-public class FriendEntity {
+@Table(name = "components_post")
+public class ComponentPostEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "friend_id", nullable = false)
-    private UserEntity friend;
+    @JoinColumn(name = "post_id", nullable = false)
+    private PostEntity post;
 
     @Column(nullable = false)
-    @CreationTimestamp
-    private LocalDateTime acceptedDate;
+    private String fileName;
 
     @Column(nullable = false)
-    private FriendStatus status;
-    @Column(nullable = false)
-    private boolean isFavorite;
+    private String filePath;
+
 }
