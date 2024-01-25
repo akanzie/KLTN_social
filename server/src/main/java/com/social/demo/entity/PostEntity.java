@@ -48,9 +48,11 @@ public class PostEntity {
 
     @Column(nullable = false)
     private String status;
+    @Column(nullable = false)
+    private boolean isPin;
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
-    private List<ComponentPostEntity> components = new ArrayList<>();
+    private List<MediaPostEntity> medias = new ArrayList<>();
 
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private List<CommentEntity> comments = new ArrayList<>();

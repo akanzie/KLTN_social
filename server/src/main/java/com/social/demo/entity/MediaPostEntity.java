@@ -14,7 +14,7 @@ import lombok.Data;
 @Entity
 @Data
 @Table(name = "components_post")
-public class ComponentPostEntity {
+public class MediaPostEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
