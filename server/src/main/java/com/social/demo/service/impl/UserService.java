@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.social.demo.constants.UserStatus;
 import com.social.demo.dto.UserDTO;
 import com.social.demo.entity.UserEntity;
 import com.social.demo.repository.UserRepository;
@@ -52,9 +53,12 @@ public class UserService implements IUserService {
     public UserDTO createUser(UserDTO userDTO) {
         UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);
 
-        if (userRepository.existsByEmail(userDTO.getEmail()))
+        if (userRepository.existsByEmail(userDTO.getEmail())){
             throw new RuntimeException("Email is already in use.");
+        }
+            
         userEntity.setPassword(passwordEncoder.encode(userDTO.getUnconfirmedPassword())); // Đảm bảo mã hóa mật khẩu
+        userEntity.setStatus(UserStatus.PUBLIC);
         UserEntity savedUser = userRepository.save(userEntity);
         return modelMapper.map(savedUser, UserDTO.class);
     }

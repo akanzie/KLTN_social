@@ -58,6 +58,7 @@ public class UserController {
             UserDTO registeredUser = userService.createUser(userDTO);
             return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
         } catch (RuntimeException e) {
+            e.printStackTrace();
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
