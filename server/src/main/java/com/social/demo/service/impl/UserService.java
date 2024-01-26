@@ -42,18 +42,19 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public UserDTO getUserByUsername(String username) {
-        UserEntity userEntity = userRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
+    public UserDTO getUserByPhone(String phone) {
+        UserEntity userEntity = userRepository.findByPhone(phone)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with phone: " + phone));
         return modelMapper.map(userEntity, UserDTO.class);
     }
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
         UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);
+
         if (userRepository.existsByEmail(userDTO.getEmail()))
-            return null;
-        userEntity.setPassword(passwordEncoder.encode(userDTO.getPassword())); // Đảm bảo mã hóa mật khẩu
+            throw new RuntimeException("Email is already in use.");
+        userEntity.setPassword(passwordEncoder.encode(userDTO.getUnconfirmedPassword())); // Đảm bảo mã hóa mật khẩu
         UserEntity savedUser = userRepository.save(userEntity);
         return modelMapper.map(savedUser, UserDTO.class);
     }
@@ -73,7 +74,6 @@ public class UserService implements IUserService {
         return passwordEncoder.matches(currentPassword, existingUser.getPassword());
     }
 
-    @Override
     public UserDTO changePassword(Long userId, String oldPassword, String newPassword) {
         UserEntity existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User with ID " + userId + " not found"));
@@ -88,15 +88,19 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public boolean authenticateUser(String username, String password) {
-        UserEntity userEntity = userRepository.findByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException("User not found with username: " + username));
-        return userEntity != null && passwordEncoder.matches(password, userEntity.getPassword());
+    public UserDTO authenticateUser(String email, String password) {
+        UserEntity userEntity = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + email));
+        if (userEntity != null && passwordEncoder.matches(password, userEntity.getPassword())) {
+            return modelMapper.map(userEntity, UserDTO.class);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public List<UserDTO> searchUser(String key) {
-        List<UserEntity> foundUsers = userRepository.searchUsers(key);
+        List<UserEntity> foundUsers = userRepository.findByFirstNameContainingOrLastNameContaining(key, key);
         return foundUsers.stream()
                 .map(userEntity -> modelMapper.map(userEntity, UserDTO.class))
                 .collect(Collectors.toList());

@@ -10,9 +10,9 @@ public interface IUserService {
 
     UserDTO getUserByEmail(String email);
 
-    UserDTO getUserByUsername(String username);
+    UserDTO getUserByPhone(String phone);
 
-    UserDTO createUser(UserDTO user);
+    UserDTO createUser(UserDTO userDTO);
 
     UserDTO updateUser(Long userId, UserDTO updatedUser);
 
@@ -20,7 +20,7 @@ public interface IUserService {
 
     UserDTO changePassword(Long userId, String oldPassword, String newPassword);
 
-    boolean authenticateUser(String username, String password);
+    UserDTO authenticateUser(String username, String password);
 
     List<UserDTO> searchUser(String key);
 }

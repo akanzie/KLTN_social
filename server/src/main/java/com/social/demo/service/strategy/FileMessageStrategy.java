@@ -11,7 +11,6 @@ import com.social.demo.constants.MessageStatus;
 import com.social.demo.dto.MessageDTO;
 import com.social.demo.entity.FileMessageEntity;
 import com.social.demo.entity.MessageEntity;
-import com.social.demo.entity.UserEntity;
 import com.social.demo.repository.FileMessageRepository;
 import com.social.demo.repository.UserRepository;
 import com.social.demo.service.IFileService;

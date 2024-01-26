@@ -2,6 +2,8 @@ package com.social.demo.dto;
 
 import java.time.LocalDate;
 
+import com.social.demo.constants.UserStatus;
+
 import lombok.Data;
 
 @Data
@@ -13,12 +15,10 @@ public class UserDTO {
     private String gender;
     private LocalDate birthday;
     private String avatarImage;
-    private String phoneNumber;
-    private boolean isPrivate;
+    private String phone;
     private String email;
-    private String username;
-    private String password;
+    private String unconfirmedPassword;
     private int followerCount;
-    private int followingCount;
-    private int postCount;
+    private int friendCount;
+    private UserStatus status;
 }

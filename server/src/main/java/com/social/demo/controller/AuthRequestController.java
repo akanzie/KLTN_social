@@ -1,13 +1,5 @@
 package com.social.demo.controller;
 
-import org.springframework.web.bind.annotation.RestController;
-
-import com.social.demo.component.JwtService;
-import com.social.demo.component.appuser.AppUser;
-import com.social.demo.component.appuser.AppUserRole;
-import com.social.demo.component.appuser.AppUserService;
-import com.social.demo.dto.AuthRequestDTO;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +10,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.social.demo.component.JwtService;
+import com.social.demo.component.appuser.AppUserService;
+import com.social.demo.dto.AuthRequestDTO;
 
 @RestController
 @RequestMapping("/api/v1/auth")
