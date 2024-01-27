@@ -1,24 +1,23 @@
 package com.social.demo.dto;
 
-import java.time.LocalDate;
 
-import com.social.demo.constants.UserStatus;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.Data;
 
 @Data
 public class UserDTO {
     private Long id;
-    private String firstName;
-    private String lastName;
+    private String fullName;
+    private String username;
     private String bio;
     private String gender;
-    private LocalDate birthday;
-    private String avatarImage;
+    private MultipartFile avatarImage;
     private String phone;
     private String email;
     private String unconfirmedPassword;
+    private int postCount;
     private int followerCount;
-    private int friendCount;
-    private UserStatus status;
+    private int followingCount;
+    private boolean isPrivate;
 }

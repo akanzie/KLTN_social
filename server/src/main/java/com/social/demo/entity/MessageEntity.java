@@ -37,6 +37,10 @@ public abstract class MessageEntity {
     @ManyToOne
     @JoinColumn(name = "receiver_id")
     private UserEntity receiver;
+    
+    @ManyToOne
+    @JoinColumn(name = "inbox_id")
+    private InboxEntity inbox;
 
     @Column(nullable = false)
     @CreationTimestamp

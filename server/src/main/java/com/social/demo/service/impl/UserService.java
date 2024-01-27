@@ -1,5 +1,6 @@
 package com.social.demo.service.impl;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -9,10 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import com.social.demo.constants.UserStatus;
+import com.social.demo.constants.Constants;
+import com.social.demo.constants.MessageStatus;
 import com.social.demo.dto.UserDTO;
 import com.social.demo.entity.UserEntity;
 import com.social.demo.repository.UserRepository;
+import com.social.demo.service.IFileService;
 import com.social.demo.service.IUserService;
 
 import jakarta.persistence.EntityNotFoundException;
@@ -27,6 +30,8 @@ public class UserService implements IUserService {
 
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private IFileService fileService;
 
     @Override
     public UserDTO getUserById(Long userId) {
@@ -43,6 +48,13 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public UserDTO getUserByUsername(String username) {
+        UserEntity userEntity = userRepository.findByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException("User not found with email: " + username));
+        return modelMapper.map(userEntity, UserDTO.class);
+    }
+
+    @Override
     public UserDTO getUserByPhone(String phone) {
         UserEntity userEntity = userRepository.findByPhone(phone)
                 .orElseThrow(() -> new EntityNotFoundException("User not found with phone: " + phone));
@@ -53,12 +65,11 @@ public class UserService implements IUserService {
     public UserDTO createUser(UserDTO userDTO) {
         UserEntity userEntity = modelMapper.map(userDTO, UserEntity.class);
 
-        if (userRepository.existsByEmail(userDTO.getEmail())){
-            throw new RuntimeException("Email is already in use.");
+        if (userRepository.existsByEmail(userDTO.getEmail()) || userRepository.existsByPhone(userDTO.getPhone())) {
+            throw new RuntimeException("Email/Phone is already in use.");
         }
-            
+
         userEntity.setPassword(passwordEncoder.encode(userDTO.getUnconfirmedPassword())); // Đảm bảo mã hóa mật khẩu
-        userEntity.setStatus(UserStatus.PUBLIC);
         UserEntity savedUser = userRepository.save(userEntity);
         return modelMapper.map(savedUser, UserDTO.class);
     }
@@ -67,8 +78,18 @@ public class UserService implements IUserService {
     public UserDTO updateUser(Long userId, UserDTO updatedUserDTO) {
         UserEntity existingUser = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException("User with ID " + userId + " not found"));
-        modelMapper.map(updatedUserDTO, existingUser); // Ánh xạ thông tin từ DTO sang Entity
-        return modelMapper.map(userRepository.save(existingUser), UserDTO.class);
+        modelMapper.map(updatedUserDTO, existingUser);
+        try {
+            String uploadDir = Constants.AVATAR_DIRECTORY;
+            String fileName = fileService.saveFileUpload(uploadDir, updatedUserDTO.getAvatarImage());
+
+            // Cập nhật thông tin file trong đối tượng FileMessageEntity
+            existingUser.setAvatarImage(fileName);
+            return modelMapper.map(userRepository.save(existingUser), UserDTO.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     @Override
@@ -104,7 +125,7 @@ public class UserService implements IUserService {
 
     @Override
     public List<UserDTO> searchUser(String key) {
-        List<UserEntity> foundUsers = userRepository.findByFirstNameContainingOrLastNameContaining(key, key);
+        List<UserEntity> foundUsers = userRepository.findByFullNameOrUsername(key, key);
         return foundUsers.stream()
                 .map(userEntity -> modelMapper.map(userEntity, UserDTO.class))
                 .collect(Collectors.toList());

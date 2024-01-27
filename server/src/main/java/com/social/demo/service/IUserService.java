@@ -12,6 +12,8 @@ public interface IUserService {
 
     UserDTO getUserByPhone(String phone);
 
+    UserDTO getUserByUsername(String username);
+
     UserDTO createUser(UserDTO userDTO);
 
     UserDTO updateUser(Long userId, UserDTO updatedUser);

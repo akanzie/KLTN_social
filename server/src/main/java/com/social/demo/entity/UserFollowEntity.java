@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 
 import org.hibernate.annotations.CreationTimestamp;
 
+import com.social.demo.constants.FollowStatus;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -34,4 +36,7 @@ public class UserFollowEntity {
     @Column(nullable = false)
     @CreationTimestamp
     private LocalDateTime followedDate;
+
+    @Column(nullable = false)
+    private FollowStatus status;
 }

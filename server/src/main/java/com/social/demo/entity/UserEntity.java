@@ -8,7 +8,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.social.demo.constants.UserStatus;
+import com.social.demo.constants.Gender;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,9 +18,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -33,17 +30,15 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    public String firstName;
+    public String fullName;
 
-    @Column(nullable = false)
-    public String lastName;
+    @Column(nullable = false, unique = true)
+    public String username;
 
     private String bio;
-
-    private String gender;
-
-    private LocalDate birthday;
+    
+    @Enumerated(EnumType.STRING)
+    private Gender gender;
 
     private String avatarImage;
 
@@ -54,8 +49,7 @@ public class UserEntity {
     public String email;
 
     @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    public UserStatus status;
+    public boolean isPrivate;
 
     @JsonIgnore
     @Column(nullable = false)
@@ -75,19 +69,16 @@ public class UserEntity {
     private List<UserFollowEntity> followers = new ArrayList<>();
     @OneToMany(mappedBy = "following", fetch = FetchType.LAZY)
     private List<UserFollowEntity> following = new ArrayList<>();
-    @ManyToMany
-    @JoinTable(name = "friends", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "friend_id"))
-    private List<UserEntity> friends = new ArrayList<>();
 
     public UserEntity() {
-
+        isPrivate = false;
     }
 
-    public UserEntity(String email, String firstName, String lastName, String password) {
+    public UserEntity(String email, String fullName, String username, String password) {
         this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-
+        this.fullName = fullName;
+        this.username = username;
+        this.isPrivate = false;
         // this.salt = UUID.randomUUID().toString();
         this.password = new BCryptPasswordEncoder().encode(password);
         this.password = password;
